@@ -78,7 +78,6 @@ if (typeof DATA != 'undefined') {
           return true;
         }
       }
-      console.log("Experiment " + obj.id + " is not set to run on this page");
       return false;
     }
 
@@ -194,13 +193,14 @@ if (typeof DATA != 'undefined') {
       // bucket the visitor
       findBucket(obj);
 
-      // return true so visitor is in audience
+      // return true so audience evaluates to true
       return true;
     }
 
     // expose the bucketing function so it can be added to the audience
     window.bucketFromAudience = bucketFromAudience;
 
+    // create a dummy audience condition of type code
     // TODO Make sure this id does not exist
     if (typeof DATA.dimensions['1234567890'] === 'undefined') {
       DATA.dimensions['1234567890'] = {
@@ -208,9 +208,9 @@ if (typeof DATA != 'undefined') {
       };
     }
 
+    // run the bucketing
     for (var key in window.opty_mvt) {
       var obj = window.opty_mvt[key];
-      console.log(obj);
       if (shouldRunBucketing(obj)) {
         bucketMVT(obj);
       }
