@@ -1,32 +1,28 @@
-// COPY THIS CODE TO PROJECT JS
+// COPY THIS CODE TO PROJECT 
+// You need to modify line 5 with experiment id and variation id.
+// You can find the variation id on the diagnostic screen
 
-window.opty_mvt = [];
-window.opty_mvt.push({
-  id: 3265190066,
-  disabled_combinations: ['2 0', '2 1', '0 1', '2 2', '1 1', '0 2', '1 0']
-});
-
-window.opty_mvt.push({
-  id: 3278230212,
-  disabled_combinations: ['2 0 0', '1 1 1', '1 0 1', '0 0 0', '2 1 0', '2 1 1']
-});
-
+window.optly_mvt = [];
+window.optly_mvt.push([{"id":4053480045, "disabled_combinations":["4042040132 4051590088","4042040132 4051610041","4044060133 4047950063","4044060133 4051590088","4044060133 4051610041","4052790055 4047950063","4055370049 4047950063","4055370049 4051610041"]},{"id":4055784970, "disabled_combinations":["4037028895 4042189221 4058838952","4037028895 4042189221 4069534828"]}]);
+window.optly_mvt = window.optly_mvt[0];
 
 if (typeof DATA != 'undefined') {
-  (function(DATA) {
+  (function (DATA) {
     'use strict';
-    
+
     /**
     * Manually bucket the visitor to a random combination
     */
     function bucketVisitor(obj) {
+      console.log("bucket visitor " + obj.id);
       var section_ids = DATA.experiments[obj.id].section_ids;
       obj.sections = [];
       obj.bucket = [];
       for (var i = 0; i < section_ids.length; i++) {
         var sid = section_ids[i];
         obj.sections.push(DATA.sections[sid].variation_ids);
-        obj.bucket.push(Math.floor((Math.random() * DATA.sections[sid].variation_ids.length)));
+        var r = Math.floor((Math.random() * DATA.sections[sid].variation_ids.length));
+        obj.bucket.push(DATA.sections[sid].variation_ids[r]);
       }
     }
 
@@ -34,6 +30,7 @@ if (typeof DATA != 'undefined') {
     * Check wether or not the chosen bucket is valid
     */
     function isValidBucket(obj) {
+      console.log("Is valid bucket? " + obj.id);
       for (var i = 0; i < obj.disabled_combinations.length; i++) {
         if (obj.disabled_combinations[i] == obj.bucket.join(" ")) {
           console.log("Invalid combination " + obj.bucket.join(" "));
@@ -50,7 +47,7 @@ if (typeof DATA != 'undefined') {
     function shouldRunBucketing(obj) {      
       if (DATA.experiments[obj.id] === undefined) {
         // experiment does not exists
-       	return false; 
+        return false; 
       }
       
       // check if the visitor is already bucketed
@@ -164,7 +161,7 @@ if (typeof DATA != 'undefined') {
         if (isValid === true) {
           ready = true;
           for (var i = 0; i < obj.bucket.length; i++) {
-            window['optimizely'].push(["bucketVisitor", obj.id, obj.sections[i][obj.bucket[i]]]);
+            window['optimizely'].push(["bucketVisitor", obj.id, obj.bucket[i]]);
           }
         }
       } // else rebucket
@@ -179,8 +176,8 @@ if (typeof DATA != 'undefined') {
 
       var obj = null;
       // Look for the experiment in the config
-      for (var key in window.opty_mvt) {
-        obj = window.opty_mvt[key];
+      for (var key in window.optly_mvt) {
+        obj = window.optly_mvt[key];
         if (obj.id == eid) {
           break;
         }
@@ -209,8 +206,8 @@ if (typeof DATA != 'undefined') {
     }
 
     // run the bucketing
-    for (var key in window.opty_mvt) {
-      var obj = window.opty_mvt[key];
+    for (var key in window.optly_mvt) {
+      var obj = window.optly_mvt[key];
       if (shouldRunBucketing(obj)) {
         bucketMVT(obj);
       }
