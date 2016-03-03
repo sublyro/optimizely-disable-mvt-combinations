@@ -1,5 +1,5 @@
 // COPY THIS CODE TO PROJECT JS 
-// You need to modify line 5 with experiment id and variation id.
+// You need to modify line 6 with experiment id and variation id.
 // You can find the variation id on the diagnostic screen
 
 window.optly_mvt = [];
