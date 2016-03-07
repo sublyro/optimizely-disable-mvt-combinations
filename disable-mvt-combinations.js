@@ -1,4 +1,5 @@
 // COPY THIS CODE TO PROJECT JS 
+// Warning! This won't work for experiments set to manual or conditional activation that won't get activated, if they have a shared audience and and the
 // You need to modify line 6 with experiment id and variation id.
 // You can find the variation id on the diagnostic screen
 
@@ -111,8 +112,12 @@ if (typeof DATA != 'undefined') {
      * Check whether the visitor passes experiment traffic allocation
      */
     function testTrafficAllocation(obj) {
-      var passTrafficAllocation = Math.floor((Math.random() * 10000) >= DATA.experiments[obj.id].ignore);
-      return Boolean(passTrafficAllocation);
+      if (DATA.experiments[obj.id].ignore !== undefined) { // if traffic allocation is less than 100%
+        var passTrafficAllocation = Math.floor((Math.random() * 10000) >= DATA.experiments[obj.id].ignore);
+        return Boolean(passTrafficAllocation);
+      } else {
+        return true;
+      }
     }
 
     function getAudience(obj) {
