@@ -8,3 +8,5 @@ window.optly_mvt.push([{"id":4053480045, "disabled_combinations":["4042040132 40
 - 'disabled_combinations' is a list of combinations to disable. You can find the Variation Ids in the diagnostic window of the Editor
 
 This bucketing only applies to NEW visitors. Visitors who are already bucketed will stay in that bucket even if the combination is disabled
+
+** This tool requires all experiments to run on 100% of traffic **
