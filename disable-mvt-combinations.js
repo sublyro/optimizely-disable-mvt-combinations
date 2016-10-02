@@ -1,4 +1,5 @@
 // COPY THIS CODE TO PROJECT JS 
+// Warning! This won't work for experiments set to manual or conditional activation that won't get activated, if they have a shared audience and and the
 // You need to modify line 6 with experiment id and variation id.
 // You can find the variation id on the diagnostic screen
 
@@ -107,6 +108,17 @@ if (typeof DATA != 'undefined') {
       return url1.match(url2) !== null;
     }
 
+    /**
+     * Check whether the visitor passes experiment traffic allocation
+     */
+    function testTrafficAllocation(obj) {
+      if (DATA.experiments[obj.id].ignore !== undefined) { // if traffic allocation is less than 100%
+        var passTrafficAllocation = Math.floor((Math.random() * 10000) >= DATA.experiments[obj.id].ignore);
+        return Boolean(passTrafficAllocation);
+      } else {
+        return true;
+      }
+    }
 
     function getAudience(obj) {
       if (DATA.experiments[obj.id].audiences === undefined) {
@@ -153,18 +165,23 @@ if (typeof DATA != 'undefined') {
     * Manually bucket the visitor in a valid MVT combination
     */
     function findBucket(obj) {
-       var ready = false;
-       window['optimizely'] = window['optimizely'] || [];
-       while (ready === false) { // run the bucketing
-        bucketVisitor(obj);
-        var isValid = isValidBucket(obj);
-        if (isValid === true) {
-          ready = true;
-          for (var i = 0; i < obj.bucket.length; i++) {
-            window['optimizely'].push(["bucketVisitor", obj.id, obj.bucket[i]]);
+      var ready = false;
+      window['optimizely'] = window['optimizely'] || [];
+      var passTrafficAllocation = testTrafficAllocation(obj);
+      if (passTrafficAllocation) { // passes traffic allocation so bucket
+        while (ready === false) { // run the bucketing
+          bucketVisitor(obj);
+          var isValid = isValidBucket(obj);
+          if (isValid === true) {
+            ready = true;
+            for (var i = 0; i < obj.bucket.length; i++) {
+              window['optimizely'].push(["bucketVisitor", obj.id, obj.bucket[i]]);
+            }
           }
-        }
-      } // else rebucket
+        } // else rebucket
+      } else { // doesn't pass traffic allocation so permanently ignore the experiment
+        window['optimizely'].push(["bucketVisitor", obj.id, 0]); 
+      }
     }
 
     /**
